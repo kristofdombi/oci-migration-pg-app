@@ -2,7 +2,7 @@
   "name": "oci-migration-pg-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Test app for the Sevalla GCP to OCI migration: a web process and a background worker that keep writing to PostgreSQL",
+  "description": "Test app for the Sevalla GCP to OCI migration: a web process and a background worker that keep writing to PostgreSQL, MySQL, MariaDB, Redis and Valkey",
   "type": "module",
   "engines": {
     "node": "22.x"
@@ -13,6 +13,8 @@
     "seed": "node seed.js"
   },
   "dependencies": {
+    "ioredis": "^5.11.1",
+    "mysql2": "^3.24.6",
     "pg": "^8.23.1"
   }
 }

@@ -1,12 +1,13 @@
-import { pool } from './lib/db.js'
+import { loadEngines } from './lib/engines/index.js'
 import { startWriter } from './lib/writer.js'
 
-const writer = startWriter('bg_worker')
+const engines = loadEngines()
+const writers = engines.map((engine) => startWriter(engine, 'bg_worker'))
 
 const shutdown = async (signal) => {
-  console.log(JSON.stringify({ msg: 'shutting down', signal, ...writer.state }))
-  writer.stop()
-  await pool.end().catch(() => {})
+  console.log(JSON.stringify({ msg: 'shutting down', signal, writers: writers.map(({ state }) => state) }))
+  writers.forEach((writer) => writer.stop())
+  await Promise.all(engines.map((engine) => engine.close().catch(() => {})))
   process.exit(0)
 }
 

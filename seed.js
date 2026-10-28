@@ -1,20 +1,20 @@
-import { readFile } from 'node:fs/promises'
-import { pool } from './lib/db.js'
+import { loadEngines } from './lib/engines/index.js'
+import { errorText } from './lib/seedData.js'
 
-const sql = await readFile(new URL('./seed.sql', import.meta.url), 'utf8')
-const client = await pool.connect()
+const engines = loadEngines(process.argv.slice(2))
 
-try {
-  await client.query('BEGIN')
-  await client.query(sql)
-  await client.query('COMMIT')
-  const { rows } = await client.query('SELECT seeded_at, seed_rows, seed_checksum FROM seed_info WHERE id = 1')
-  console.log(JSON.stringify({ msg: 'seed done', ...rows[0] }))
-} catch (e) {
-  await client.query('ROLLBACK')
-  console.error(JSON.stringify({ msg: 'seed failed', error: e.message }))
-  process.exitCode = 1
-} finally {
-  client.release()
-  await pool.end()
+for (const engine of engines) {
+  try {
+    await engine.ready()
+    const seed = await engine.seed()
+    console.log(JSON.stringify({ msg: 'seed done', engine: engine.name, ...seed }))
+    if (!seed?.intact) {
+      process.exitCode = 1
+    }
+  } catch (e) {
+    console.error(JSON.stringify({ msg: 'seed failed', engine: engine.name, error: errorText(e) }))
+    process.exitCode = 1
+  } finally {
+    await engine.close().catch(() => {})
+  }
 }
