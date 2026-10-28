@@ -27,7 +27,7 @@ SQL engines get `web_proc` and `bg_worker` tables (`id`, `seq`, `pod`, `client_t
 
 ## Seed
 
-`npm run seed` (or `node seed.js postgres mysql` for some engines only) creates the tables and fills `seed_data` with 10,000 rows (a hash with 10,000 fields on Redis and Valkey). Their checksum goes into `seed_info`, so you can check after the move that the data came over intact. The checksum is the same on every engine. The seed is idempotent and exits non-zero when it fails.
+`npm run seed` (or `node seed.js postgres mysql` for some engines only) creates the tables and fills `seed_data` with 10,000 rows (a hash with 10,000 fields on Redis and Valkey). Their checksum goes into `seed_info`, so you can check after the move that the data came over intact. The checksum is the same on every engine. The seed is idempotent, retries for up to 2 minutes while a database is unreachable (`SEED_TIMEOUT_MS`), and exits non-zero when it fails.
 
 On Sevalla, seed from inside the cluster, for example with a job process (`node seed.js`, start policy `beforeDeployment`). Don't turn on a database's external connection to seed it: closing it keeps a port reserved on the database, and the migration then counts it as a database with public access.
 
