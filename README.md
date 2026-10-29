@@ -34,7 +34,7 @@ On Sevalla, seed from inside the cluster, for example with a job process (`node 
 ## Endpoints
 
 - `GET /healthz` - liveness, never touches a database
-- `GET /` - per engine: server identity, row counts and last write per table, seed checksum check, and the web writer's failure and outage history. Returns 503 when any engine fails.
+- `GET /` - per engine: server identity (and for Postgres whether the connection uses TLS), row counts and last write per table, seed checksum check, and the web writer's failure and outage history. Returns 503 when any engine fails.
 - `GET /gaps?engine=postgres&table=web_proc&min=5&hours=24` - every gap between consecutive writes longer than `min` seconds
 
 Both processes log `write failing` and `write recovered` (with the outage length) to stdout.
