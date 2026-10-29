@@ -19,6 +19,8 @@ Each database is optional. Set the URL of the ones you want to test:
 | Redis | `REDIS_URL` | `redis://default:password@host:6379` |
 | Valkey | `VALKEY_URL` | `redis://default:password@host:6379` |
 
+`POSTGRES_SSL_CA` (a PEM CA certificate, `\n` escapes allowed) makes the Postgres connection use TLS and verify the server certificate against that CA and the host name, like `sslmode=verify-full`. Leave `sslmode` out of `POSTGRES_URL` when you set it.
+
 `WRITE_INTERVAL_MS` overrides the 2 second interval.
 
 SQL engines get `web_proc` and `bg_worker` tables (`id`, `seq`, `pod`, `client_ts`, `created_at`). Redis and Valkey get streams with the same names, whose entry IDs carry the server time.
